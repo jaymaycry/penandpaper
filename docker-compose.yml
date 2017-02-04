@@ -1,0 +1,8 @@
+mongodb:
+  image: mongo:latest
+  ports:
+   - 27017:27017
+  environment:
+   - CLUSTER_RAM_QUOTA:1024
+  volumes:
+   - ./data:/data/db
