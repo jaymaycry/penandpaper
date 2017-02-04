@@ -1,4 +1,4 @@
-# penandpaper
+# penandpaper [![Build Status](https://travis-ci.org/jaymaycry/penandpaper.svg?branch=dev)](https://travis-ci.org/jaymaycry/penandpaper)
 
 This project was generated with the [Angular Full-Stack Generator](https://github.com/DaftMonk/generator-angular-fullstack) version 4.1.2.
 
