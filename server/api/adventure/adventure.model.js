@@ -33,6 +33,7 @@ var AdventureSchema = new mongoose.Schema({
       dependencies: [String],
       value: { type: Number, default: 0 },
       dices: { type: String, enum: diceTypes },
+      levelfactor: { type: Number, default: 1 },
     }],
   },
 
