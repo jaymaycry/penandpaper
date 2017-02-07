@@ -2,6 +2,7 @@
 /*eslint no-invalid-this:0*/
 import crypto from 'crypto';
 mongoose.Promise = require('bluebird');
+const ObjectId = mongoose.Schema.Types.ObjectId;
 import mongoose, {Schema} from 'mongoose';
 
 var UserSchema = new Schema({
@@ -19,6 +20,7 @@ var UserSchema = new Schema({
     type: String,
     required: true
   },
+  adventures: [{ type: ObjectId, ref: 'Adventure' }],
   provider: String,
   salt: String
 });
