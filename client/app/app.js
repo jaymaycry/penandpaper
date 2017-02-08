@@ -26,11 +26,12 @@ import main from './main/main.component';
 import constants from './app.constants';
 import util from '../components/util/util.module';
 import socket from '../components/socket/socket.service';
+import _Service from './services/service.module';
 
 import './app.scss';
 
 angular.module('penandpaperApp', [ngCookies, ngResource, ngSanitize, 'btford.socket-io', uiRouter,
-  uiBootstrap, _Auth, account, admin, navbar, footer, main, constants, socket, util
+  uiBootstrap, _Auth, account, admin, navbar, footer, main, constants, socket, util, _Service
 ])
   .config(routeConfig)
   .run(function($rootScope, $location, Auth) {
