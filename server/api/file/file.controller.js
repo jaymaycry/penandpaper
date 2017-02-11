@@ -11,13 +11,10 @@ import mongoose from 'mongoose';
 import Grid from 'gridfs-stream';
 
 const controllers = {
-  create: (req, res) => {
-    console.log(req);
-    return res.status(201).json({
-      url: `/api/files/${req.file.filename}`,
-      filename: req.file.filename,
-    });
-  },
+  create: (req, res) => res.status(201).json({
+    url: `/api/files/${req.file.filename}`,
+    filename: req.file.filename,
+  }),
 
   show: (req, res) => {
     const filename = req.params.id;
