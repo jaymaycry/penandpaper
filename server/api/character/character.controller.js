@@ -78,8 +78,18 @@ export function show(req, res) {
     .catch(handleError(res));
 }
 
+// Gets a single Character from the DB
+export function my(req, res) {
+  return Character.find({ _owner: req.user._id }).exec()
+    .then(handleEntityNotFound(res))
+    .then(respondWithResult(res))
+    .catch(handleError(res));
+}
+
 // Creates a new Character in the DB
 export function create(req, res) {
+  // set creator
+  req.body._owner = req.user._id;
   return Character.create(req.body)
     .then(respondWithResult(res, 201))
     .catch(handleError(res));

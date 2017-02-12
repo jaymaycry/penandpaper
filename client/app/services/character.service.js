@@ -8,6 +8,11 @@ export function CharacterResource($resource) {
       method: 'GET',
       isArray: true
     },
+    my: {
+      method: 'GET',
+      isArray: true,
+      params: { controller: 'my' }
+    },
     update: {
       method: 'PUT'
     },

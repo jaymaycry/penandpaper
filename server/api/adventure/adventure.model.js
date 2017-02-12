@@ -1,14 +1,19 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import shortid from 'shortid';
 const ObjectId = mongoose.Schema.Types.ObjectId;
 const diceTypes = ['W4', 'W6', 'W8', 'W10', 'W12', 'W20'];
+shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?');
 
 var AdventureSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
-  name: String,
+  name: { type: String, required: true },
   description: String,
-  _gamemaster: { type: ObjectId, ref: 'User' },
+  _gamemaster: { type: ObjectId, ref: 'User', required: true },
+  adventurePic: String,
+  adventureHeaderPic: String,
+  _shortId: { type: String, default: shortid.generate, required: true, index: true },
   charTemplate: {
     /**
      * Stats are attributes of a character which will be changed by the gm

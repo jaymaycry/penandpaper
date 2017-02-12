@@ -6,10 +6,8 @@
  */
 
 'use strict';
-
 import mongoose from 'mongoose';
 import Grid from 'gridfs-stream';
-
 const controllers = {
   create: (req, res) => res.status(201).json({
     url: `/api/files/${req.file.filename}`,
@@ -19,7 +17,6 @@ const controllers = {
   show: (req, res) => {
     const filename = req.params.id;
     const gfs = Grid(mongoose.connection.db, mongoose.mongo);
-
     // get metadata
     gfs.findOne({ filename }, (err, file) => {
       if(err) return res.status(500).send(err);
@@ -37,7 +34,6 @@ const controllers = {
   destroy: (req, res) => {
     const filename = req.params.id;
     const gfs = Grid(mongoose.connection.db, mongoose.mongo);
-
     gfs.exist({ filename }, (err, found) => {
       if(err) return res.status(500).send(err);
       if(found) {
@@ -49,8 +45,6 @@ const controllers = {
         return res.status(404).send({ status: 'not found' });
       }
     });
-
-
   },
 };
 

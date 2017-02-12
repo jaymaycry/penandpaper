@@ -7,10 +7,20 @@ var proxyquire = require('proxyquire').noPreserveCache();
 var adventureCtrlStub = {
   index: 'adventureCtrl.index',
   show: 'adventureCtrl.show',
+  my: 'adventureCtrl.my',
   create: 'adventureCtrl.create',
   upsert: 'adventureCtrl.upsert',
   patch: 'adventureCtrl.patch',
   destroy: 'adventureCtrl.destroy'
+};
+
+var authServiceStub = {
+  isAuthenticated() {
+    return 'authService.isAuthenticated';
+  },
+  hasRole(role) {
+    return `authService.hasRole.${role}`;
+  }
 };
 
 var routerStub = {
@@ -28,7 +38,8 @@ var adventureIndex = proxyquire('./index.js', {
       return routerStub;
     }
   },
-  './adventure.controller': adventureCtrlStub
+  './adventure.controller': adventureCtrlStub,
+  '../../auth/auth.service': authServiceStub
 });
 
 describe('Adventure API Router:', function() {
@@ -39,7 +50,15 @@ describe('Adventure API Router:', function() {
   describe('GET /api/adventures', function() {
     it('should route to adventure.controller.index', function() {
       expect(routerStub.get
-        .withArgs('/', 'adventureCtrl.index')
+        .withArgs('/', 'authService.isAuthenticated', 'adventureCtrl.index')
+        ).to.have.been.calledOnce;
+    });
+  });
+
+  describe('GET /api/adventures/my', function() {
+    it('should route to adventure.controller.my', function() {
+      expect(routerStub.get
+        .withArgs('/my', 'authService.isAuthenticated', 'adventureCtrl.my')
         ).to.have.been.calledOnce;
     });
   });
@@ -47,7 +66,7 @@ describe('Adventure API Router:', function() {
   describe('GET /api/adventures/:id', function() {
     it('should route to adventure.controller.show', function() {
       expect(routerStub.get
-        .withArgs('/:id', 'adventureCtrl.show')
+        .withArgs('/:id', 'authService.isAuthenticated', 'adventureCtrl.show')
         ).to.have.been.calledOnce;
     });
   });
@@ -55,7 +74,7 @@ describe('Adventure API Router:', function() {
   describe('POST /api/adventures', function() {
     it('should route to adventure.controller.create', function() {
       expect(routerStub.post
-        .withArgs('/', 'adventureCtrl.create')
+        .withArgs('/', 'authService.isAuthenticated', 'adventureCtrl.create')
         ).to.have.been.calledOnce;
     });
   });
@@ -63,7 +82,7 @@ describe('Adventure API Router:', function() {
   describe('PUT /api/adventures/:id', function() {
     it('should route to adventure.controller.upsert', function() {
       expect(routerStub.put
-        .withArgs('/:id', 'adventureCtrl.upsert')
+        .withArgs('/:id', 'authService.isAuthenticated', 'adventureCtrl.upsert')
         ).to.have.been.calledOnce;
     });
   });
@@ -71,7 +90,7 @@ describe('Adventure API Router:', function() {
   describe('PATCH /api/adventures/:id', function() {
     it('should route to adventure.controller.patch', function() {
       expect(routerStub.patch
-        .withArgs('/:id', 'adventureCtrl.patch')
+        .withArgs('/:id', 'authService.isAuthenticated', 'adventureCtrl.patch')
         ).to.have.been.calledOnce;
     });
   });
@@ -79,7 +98,7 @@ describe('Adventure API Router:', function() {
   describe('DELETE /api/adventures/:id', function() {
     it('should route to adventure.controller.destroy', function() {
       expect(routerStub.delete
-        .withArgs('/:id', 'adventureCtrl.destroy')
+        .withArgs('/:id', 'authService.hasRole.admin', 'adventureCtrl.destroy')
         ).to.have.been.calledOnce;
     });
   });
