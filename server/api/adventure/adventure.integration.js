@@ -4,16 +4,79 @@
 
 var app = require('../..');
 import request from 'supertest';
+import User from '../user/user.model';
 
 var newAdventure;
 
 describe('Adventure API:', function() {
+  var user;
+  var admin;
+  var userToken;
+  var adminToken;
+
+  // Clear users before testing
+  before(function() {
+    return User.remove()
+    .then(function() {
+      user = new User({
+        name: 'Fake User',
+        email: 'test@example.com',
+        password: 'password'
+      });
+
+      return user.save();
+    })
+    .then(function() {
+      admin = new User({
+        name: 'Fake User',
+        email: 'admin@example.com',
+        password: 'admin',
+        role: 'admin',
+      });
+
+      return admin.save();
+    });
+  });
+
+  // User login
+  before(function(done) {
+    request(app)
+      .post('/auth/local')
+      .send({
+        email: 'test@example.com',
+        password: 'password'
+      })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((err, res) => {
+        userToken = `Bearer ${res.body.token}`;
+        done();
+      });
+  });
+
+  // Admin login
+  before(function(done) {
+    request(app)
+      .post('/auth/local')
+      .send({
+        email: 'admin@example.com',
+        password: 'admin'
+      })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .end((err, res) => {
+        adminToken = `Bearer ${res.body.token}`;
+        done();
+      });
+  });
+
   describe('GET /api/adventures', function() {
     var adventures;
 
     beforeEach(function(done) {
       request(app)
         .get('/api/adventures')
+        .set('authorization', userToken)
         .expect(200)
         .expect('Content-Type', /json/)
         .end((err, res) => {
@@ -34,6 +97,7 @@ describe('Adventure API:', function() {
     beforeEach(function(done) {
       request(app)
         .post('/api/adventures')
+        .set('authorization', userToken)
         .send({
           name: 'New Adventure',
           description: 'This is the brand new adventure!!!',
@@ -97,6 +161,7 @@ describe('Adventure API:', function() {
     beforeEach(function(done) {
       request(app)
         .get(`/api/adventures/${newAdventure._id}`)
+        .set('authorization', userToken)
         .expect(200)
         .expect('Content-Type', /json/)
         .end((err, res) => {
@@ -127,6 +192,7 @@ describe('Adventure API:', function() {
     beforeEach(function(done) {
       request(app)
         .put(`/api/adventures/${newAdventure._id}`)
+        .set('authorization', userToken)
         .send({
           name: 'Updated Adventure',
           description: 'This is the updated adventure!!!',
@@ -195,6 +261,7 @@ describe('Adventure API:', function() {
     it('should respond with the updated adventure on a subsequent GET', function(done) {
       request(app)
         .get(`/api/adventures/${newAdventure._id}`)
+        .set('authorization', userToken)
         .expect(200)
         .expect('Content-Type', /json/)
         .end((err, res) => {
@@ -223,6 +290,7 @@ describe('Adventure API:', function() {
     beforeEach(function(done) {
       request(app)
         .patch(`/api/adventures/${newAdventure._id}`)
+        .set('authorization', userToken)
         .send([
           { op: 'replace', path: '/name', value: 'Patched Adventure' },
           { op: 'replace', path: '/description', value: 'This is the patched adventure!!!' },
@@ -253,9 +321,23 @@ describe('Adventure API:', function() {
   });
 
   describe('DELETE /api/adventures/:id', function() {
+    it('should respond with 403 when not logged in as admin', function(done) {
+      request(app)
+        .delete(`/api/adventures/${newAdventure._id}`)
+        .set('authorization', userToken)
+        .expect(403)
+        .end(err => {
+          if(err) {
+            return done(err);
+          }
+          done();
+        });
+    });
+
     it('should respond with 204 on successful removal', function(done) {
       request(app)
         .delete(`/api/adventures/${newAdventure._id}`)
+        .set('authorization', adminToken)
         .expect(204)
         .end(err => {
           if(err) {
@@ -268,6 +350,7 @@ describe('Adventure API:', function() {
     it('should respond with 404 when adventure does not exist', function(done) {
       request(app)
         .delete(`/api/adventures/${newAdventure._id}`)
+        .set('authorization', adminToken)
         .expect(404)
         .end(err => {
           if(err) {
