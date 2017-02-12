@@ -150,6 +150,7 @@ describe('Adventure API:', function() {
     it('should respond with the newly created adventure', function() {
       expect(newAdventure.name).to.equal('New Adventure');
       expect(newAdventure._gamemaster).to.equal(user._id.toString());
+      expect(newAdventure.shortid.length).to.be.at.least(7);
       expect(newAdventure.description).to.equal('This is the brand new adventure!!!');
       expect(newAdventure.charTemplate.stats.length).to.equal(1);
       expect(newAdventure.charTemplate.attributes.length).to.equal(3);
