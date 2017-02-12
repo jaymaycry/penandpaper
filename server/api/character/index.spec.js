@@ -7,6 +7,7 @@ var proxyquire = require('proxyquire').noPreserveCache();
 var characterCtrlStub = {
   index: 'characterCtrl.index',
   show: 'characterCtrl.show',
+  my: 'characterCtrl.my',
   create: 'characterCtrl.create',
   upsert: 'characterCtrl.upsert',
   patch: 'characterCtrl.patch',
@@ -50,6 +51,14 @@ describe('Character API Router:', function() {
     it('should route to character.controller.index', function() {
       expect(routerStub.get
         .withArgs('/', 'authService.isAuthenticated', 'characterCtrl.index')
+        ).to.have.been.calledOnce;
+    });
+  });
+
+  describe('GET /api/characters/my', function() {
+    it('should route to character.controller.index', function() {
+      expect(routerStub.get
+        .withArgs('/my', 'authService.isAuthenticated', 'characterCtrl.my')
         ).to.have.been.calledOnce;
     });
   });

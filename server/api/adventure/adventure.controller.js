@@ -80,6 +80,9 @@ export function show(req, res) {
 
 // Creates a new Adventure in the DB
 export function create(req, res) {
+  // set creator as gamemaster
+  req.body._gamemaster = req.user._id;
+
   return Adventure.create(req.body)
     .then(respondWithResult(res, 201))
     .catch(handleError(res));

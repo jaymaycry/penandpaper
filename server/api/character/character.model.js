@@ -6,15 +6,15 @@ const diceTypes = ['W4', 'W6', 'W8', 'W10', 'W12', 'W20'];
 
 var CharacterSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
-  _adventure: { type: ObjectId, ref: 'Adventure' },
-  _owner: { type: ObjectId, ref: 'User' },
-  name: String,
+  _adventure: { type: ObjectId, ref: 'Adventure', required: true },
+  _owner: { type: ObjectId, ref: 'User', required: true },
+  name: { type: String, required: true },
   gender: String,
   race: String,
   profession: String,
   age: String,
   biography: String,
-  attributePoints: Number,
+  attributePoints: { type: Number, default: 0 },
   /**
    * Stats are attributes of a character which will be changed by the gm
    * over time like for example health or mana, initiative etc.

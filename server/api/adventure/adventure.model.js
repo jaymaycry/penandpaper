@@ -6,9 +6,9 @@ const diceTypes = ['W4', 'W6', 'W8', 'W10', 'W12', 'W20'];
 
 var AdventureSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
-  name: String,
+  name: { type: String, required: true },
   description: String,
-  _gamemaster: { type: ObjectId, ref: 'User' },
+  _gamemaster: { type: ObjectId, ref: 'User', required: true },
   charTemplate: {
     /**
      * Stats are attributes of a character which will be changed by the gm

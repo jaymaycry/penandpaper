@@ -5,6 +5,7 @@
 var app = require('../..');
 import request from 'supertest';
 import User from '../user/user.model';
+import Adventure from '../adventure/adventure.model';
 
 var newCharacter;
 
@@ -13,6 +14,7 @@ describe('Character API:', function() {
   var admin;
   var userToken;
   var adminToken;
+  var adventure;
 
   // Clear users before testing
   before(function() {
@@ -35,6 +37,17 @@ describe('Character API:', function() {
       });
 
       return admin.save();
+    })
+    .then(function() {
+      return Adventure.remove()
+      .then(function() {
+        adventure = new Adventure({
+          name: 'TEST ADVENTURE',
+          _gamemaster: user._id
+        });
+
+        return adventure.save();
+      });
     });
   });
 
@@ -104,6 +117,7 @@ describe('Character API:', function() {
           race: 'Mensch',
           profession: 'Jäger',
           age: '36',
+          _adventure: adventure._id,
           attributPoints: 25,
           inventory: [
             { name: 'Knarre 3xW6 DMG', weight: 1, equipped: true },
@@ -150,10 +164,46 @@ describe('Character API:', function() {
 
     it('should respond with the newly created character', function() {
       expect(newCharacter.name).to.equal('Geronimo Röder');
+      expect(newCharacter._owner).to.equal(user._id.toString());
       expect(newCharacter.gender).to.equal('Männlich');
       expect(newCharacter.inventory.length).to.equal(2);
       expect(newCharacter.stats.length).to.equal(1);
       expect(newCharacter.attributes.length).to.equal(3);
+    });
+  });
+
+  describe('GET /api/characters/my', function() {
+    it('should respond with my characters', function(done) {
+      request(app)
+        .get('/api/characters/my')
+        .set('authorization', userToken)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res) => {
+          if(err) {
+            return done(err);
+          }
+          var characters = res.body;
+          expect(characters.length).to.equal(1);
+          expect(characters[0].name).to.equal('Geronimo Röder');
+          done();
+        });
+    });
+
+    it('should respond with empty array if no characters created', function(done) {
+      request(app)
+        .get('/api/characters/my')
+        .set('authorization', adminToken)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res) => {
+          if(err) {
+            return done(err);
+          }
+          var characters = res.body;
+          expect(characters.length).to.equal(0);
+          done();
+        });
     });
   });
 
@@ -201,6 +251,7 @@ describe('Character API:', function() {
           race: 'Mensch',
           profession: 'Jäger',
           age: '36',
+          _adventure: adventure._id,
           attributPoints: 25,
           inventory: [
             { name: 'Knarre 3xW6 DMG', weight: 1, equipped: true },
