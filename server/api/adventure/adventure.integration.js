@@ -5,6 +5,7 @@
 var app = require('../..');
 import request from 'supertest';
 import User from '../user/user.model';
+import Adventure from './adventure.model';
 
 var newAdventure;
 
@@ -153,6 +154,68 @@ describe('Adventure API:', function() {
       expect(newAdventure.charTemplate.stats.length).to.equal(1);
       expect(newAdventure.charTemplate.attributes.length).to.equal(3);
       expect(newAdventure.charTemplate.attributes[2].name).to.equal('Mechanik');
+    });
+  });
+
+  describe('GET /api/adventures/my', function() {
+    var adventure1;
+    var adventure2;
+
+    before(() => {
+      adventure1 = new Adventure({
+        name: 'TEST1',
+        _gamemaster: user._id
+      });
+
+      return adventure1.save();
+    });
+
+    before(() => {
+      adventure2 = new Adventure({
+        name: 'TEST2',
+        _gamemaster: user._id
+      });
+
+      return adventure2.save();
+    });
+
+    before(() => {
+      user.adventures = [newAdventure._id, adventure1._id, adventure2._id];
+      return user.save();
+    });
+
+    after(() => adventure1.remove());
+    after(() => adventure2.remove());
+
+    it('should respond with my adventures', function(done) {
+      request(app)
+        .get(`/api/adventures/my`)
+        .set('authorization', userToken)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res) => {
+          if(err) {
+            return done(err);
+          }
+          expect(res.body.length).to.equal(3);
+          done();
+        });
+    });
+
+
+    it('should respond with empty array if no adventures available for that user', function(done) {
+      request(app)
+        .get(`/api/adventures/my`)
+        .set('authorization', adminToken)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res) => {
+          if(err) {
+            return done(err);
+          }
+          expect(res.body.length).to.equal(0);
+          done();
+        });
     });
   });
 

@@ -9,6 +9,7 @@ var CharacterSchema = new mongoose.Schema({
   _adventure: { type: ObjectId, ref: 'Adventure', required: true },
   _owner: { type: ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
+  characterPic: String,
   gender: String,
   race: String,
   profession: String,

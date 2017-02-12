@@ -9,6 +9,8 @@ var AdventureSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: String,
   _gamemaster: { type: ObjectId, ref: 'User', required: true },
+  adventurePic: String,
+  adventureHeaderPic: String,
   charTemplate: {
     /**
      * Stats are attributes of a character which will be changed by the gm

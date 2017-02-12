@@ -56,7 +56,7 @@ describe('Character API Router:', function() {
   });
 
   describe('GET /api/characters/my', function() {
-    it('should route to character.controller.index', function() {
+    it('should route to character.controller.my', function() {
       expect(routerStub.get
         .withArgs('/my', 'authService.isAuthenticated', 'characterCtrl.my')
         ).to.have.been.calledOnce;

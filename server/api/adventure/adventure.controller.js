@@ -70,6 +70,14 @@ export function index(req, res) {
     .catch(handleError(res));
 }
 
+// Gets a single Character from the DB
+export function my(req, res) {
+  return Adventure.find({ _id: { $in: req.user.adventures } }).exec()
+    .then(handleEntityNotFound(res))
+    .then(respondWithResult(res))
+    .catch(handleError(res));
+}
+
 // Gets a single Adventure from the DB
 export function show(req, res) {
   return Adventure.findById(req.params.id).exec()

@@ -7,6 +7,7 @@ var proxyquire = require('proxyquire').noPreserveCache();
 var adventureCtrlStub = {
   index: 'adventureCtrl.index',
   show: 'adventureCtrl.show',
+  my: 'adventureCtrl.my',
   create: 'adventureCtrl.create',
   upsert: 'adventureCtrl.upsert',
   patch: 'adventureCtrl.patch',
@@ -50,6 +51,14 @@ describe('Adventure API Router:', function() {
     it('should route to adventure.controller.index', function() {
       expect(routerStub.get
         .withArgs('/', 'authService.isAuthenticated', 'adventureCtrl.index')
+        ).to.have.been.calledOnce;
+    });
+  });
+
+  describe('GET /api/adventures/my', function() {
+    it('should route to adventure.controller.my', function() {
+      expect(routerStub.get
+        .withArgs('/my', 'authService.isAuthenticated', 'adventureCtrl.my')
         ).to.have.been.calledOnce;
     });
   });
