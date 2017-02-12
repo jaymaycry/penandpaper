@@ -80,7 +80,9 @@ export function my(req, res) {
 
 // Gets a single Adventure from the DB
 export function show(req, res) {
-  return Adventure.findById(req.params.id).exec()
+  return ((req.params.id.length >= 7 && req.params.id.length <= 14) ?
+    Adventure.findOne({ _shortId: req.params.id }).exec() :
+    Adventure.findById(req.params.id).exec())
     .then(handleEntityNotFound(res))
     .then(respondWithResult(res))
     .catch(handleError(res));

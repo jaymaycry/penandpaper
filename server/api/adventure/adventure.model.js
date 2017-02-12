@@ -13,7 +13,7 @@ var AdventureSchema = new mongoose.Schema({
   _gamemaster: { type: ObjectId, ref: 'User', required: true },
   adventurePic: String,
   adventureHeaderPic: String,
-  shortid: { type: String, default: shortid.generate },
+  _shortId: { type: String, default: shortid.generate, required: true, index: true },
   charTemplate: {
     /**
      * Stats are attributes of a character which will be changed by the gm

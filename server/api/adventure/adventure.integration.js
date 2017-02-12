@@ -150,7 +150,7 @@ describe('Adventure API:', function() {
     it('should respond with the newly created adventure', function() {
       expect(newAdventure.name).to.equal('New Adventure');
       expect(newAdventure._gamemaster).to.equal(user._id.toString());
-      expect(newAdventure.shortid.length).to.be.at.least(7);
+      expect(newAdventure._shortId.length).to.be.at.least(7);
       expect(newAdventure.description).to.equal('This is the brand new adventure!!!');
       expect(newAdventure.charTemplate.stats.length).to.equal(1);
       expect(newAdventure.charTemplate.attributes.length).to.equal(3);
@@ -221,9 +221,7 @@ describe('Adventure API:', function() {
   });
 
   describe('GET /api/adventures/:id', function() {
-    var adventure;
-
-    beforeEach(function(done) {
+    it('should respond with the requested adventure', function(done) {
       request(app)
         .get(`/api/adventures/${newAdventure._id}`)
         .set('authorization', userToken)
@@ -233,21 +231,34 @@ describe('Adventure API:', function() {
           if(err) {
             return done(err);
           }
-          adventure = res.body;
+          var adventure = res.body;
+          expect(adventure.name).to.equal('New Adventure');
+          expect(adventure.description).to.equal('This is the brand new adventure!!!');
+          expect(adventure.charTemplate.stats.length).to.equal(1);
+          expect(adventure.charTemplate.attributes.length).to.equal(3);
+          expect(adventure.charTemplate.attributes[2].name).to.equal('Mechanik');
           done();
         });
     });
 
-    afterEach(function() {
-      adventure = {};
-    });
-
-    it('should respond with the requested adventure', function() {
-      expect(adventure.name).to.equal('New Adventure');
-      expect(adventure.description).to.equal('This is the brand new adventure!!!');
-      expect(adventure.charTemplate.stats.length).to.equal(1);
-      expect(adventure.charTemplate.attributes.length).to.equal(3);
-      expect(adventure.charTemplate.attributes[2].name).to.equal('Mechanik');
+    it('should respond with the requested adventure through shortId', function(done) {
+      request(app)
+        .get(`/api/adventures/${newAdventure._shortId}`)
+        .set('authorization', userToken)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end((err, res) => {
+          if(err) {
+            return done(err);
+          }
+          var adventure = res.body;
+          expect(adventure.name).to.equal('New Adventure');
+          expect(adventure.description).to.equal('This is the brand new adventure!!!');
+          expect(adventure.charTemplate.stats.length).to.equal(1);
+          expect(adventure.charTemplate.attributes.length).to.equal(3);
+          expect(adventure.charTemplate.attributes[2].name).to.equal('Mechanik');
+          done();
+        });
     });
   });
 
@@ -261,6 +272,8 @@ describe('Adventure API:', function() {
         .send({
           name: 'Updated Adventure',
           description: 'This is the updated adventure!!!',
+          _gamemaster: newAdventure._gamemaster,
+          _shortId: newAdventure._shortId,
           charTemplate: {
             stats: [
               {
